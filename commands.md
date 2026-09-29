@@ -25,6 +25,16 @@ java -Xmx6G -Xms2G -jar fabric-server-launch.jar nogui
 # Xms -> min
 ```
 
+## LAN IP
+
+```bash
+# Linux
+ip -4 -br addr
+
+# Mac (en0 is usually Wi-Fi, try en1 if empty)
+ipconfig getifaddr en0
+```
+
 ## Stop
 
 ```bash
