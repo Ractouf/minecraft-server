@@ -4,6 +4,7 @@
 Usage: ./run.py            (run it instead of `java -jar fabric-server-launch.jar nogui`)
 Type console commands as usual. `stop` or Ctrl+C shuts down without a reset.
 """
+import io
 import json
 import re
 import shutil
@@ -35,15 +36,21 @@ def load_death_patterns():
 
     Group "victim" captures %1$s, which is always the player who died.
     """
-    jars = sorted(SERVER_DIR.glob("versions/*/server-*.jar")) + sorted(SERVER_DIR.glob("mods/*.jar"))
     templates = {}
-    for jar in jars:
+
+    def read_jar(jar):
         with zipfile.ZipFile(jar) as zf:
             for name in zf.namelist():
                 if name.endswith("/lang/en_us.json"):
                     lang = json.loads(zf.read(name))
                     templates.update({k: v for k, v in lang.items()
                                       if k.startswith("death.") and "%1$s" in v})
+                elif name.startswith("META-INF/versions/") and name.endswith(".jar"):
+                    read_jar(io.BytesIO(zf.read(name)))  # the real server jar, nested in server.jar
+
+    for jar in [SERVER_DIR / "server.jar", *sorted(SERVER_DIR.glob("mods/*.jar"))]:
+        if jar.exists():
+            read_jar(jar)
     if not templates:
         sys.exit("[run.py] No death messages found in the server jar, refusing to start.")
     patterns = []
