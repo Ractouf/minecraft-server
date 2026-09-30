@@ -7,22 +7,27 @@
 java -jar fabric-installer-1.1.1.jar server -mcversion 26.3 -loader 0.19.5 -downloadMinecraft
 ```
 
-## Start
+## Firewall
 
 ```bash
 # Open firewall
 sudo ufw allow 25565/tcp
 
+# Close firewall
+sudo ufw delete allow 25565/tcp
+```
+
+## Start
+
+```bash
 # Start vanilla server
 java -Xmx6G -Xms2G -jar server.jar nogui
 
 # Start modded server
 java -Xmx6G -Xms2G -jar fabric-server-launch.jar nogui
 
-## Change RAM
-
-# Xmx -> max
-# Xms -> min
+# Start auto restart hardcore server
+./auto-death-restart.py
 ```
 
 ## LAN IP
@@ -33,11 +38,4 @@ ip -4 -br addr
 
 # Mac (en0 is usually Wi-Fi, try en1 if empty)
 ipconfig getifaddr en0
-```
-
-## Stop
-
-```bash
-# Close firewall
-sudo ufw delete allow 25565/tcp
 ```
